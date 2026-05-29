@@ -1,0 +1,38 @@
+# NHIS OOP Ghana 261 Districts — Python Dependencies
+# Pinned for reproducibility | Python 3.12
+# Install: pip install -r requirements.txt
+
+# Core scientific stack
+numpy==2.2.6
+pandas==2.2.3
+scipy==1.15.3
+
+# Machine learning
+scikit-learn==1.7.2
+joblib==1.5.3
+threadpoolctl==3.6.0
+
+# Geospatial
+geopandas==1.0.1
+shapely==2.0.7
+pyproj==3.7.1
+fiona==1.10.1
+
+# Visualisation
+matplotlib==3.10.3
+seaborn==0.13.2
+plotly==6.1.1
+
+# Data utilities
+openpyxl==3.1.5
+xlrd==2.0.1
+
+# App / dashboard
+flask==3.1.1
+
+# Testing
+pytest==8.3.5
+pytest-cov==6.1.0
+
+# Linting
+ruff==0.11.12

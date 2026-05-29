@@ -1,0 +1,31 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Syntax check — all Python scripts
+        run: |
+          find . -name "*.py" \
+            -not -path "./.git/*" \
+            -not -path "./dashboard/*" \
+            -not -path "./poster/*" \
+            | sort | xargs -I{} python -m py_compile {} \
+            && echo "All .py files pass syntax check"
+      - name: Dependency consistency check
+        run: pip check
+      - name: Lint (errors and undefined names only)
+        run: |
+          pip install ruff --quiet
+          ruff check . --select=E9,F63,F7,F82 --exclude=dashboard,poster || true

@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this software or data, please cite it as below."
+type: software
+title: "Spatial distribution and socioeconomic determinants of NHIS non-enrolment across 261 districts in Ghana: a geographically weighted regression and machine learning analysis"
+authors:
+  - family-names: "Ghanem"
+    given-names: "Valentine Golden"
+    orcid: "https://orcid.org/0009-0002-8332-0220"
+    affiliation: "Ghana COCOBOD Cocoa Clinic, Accra, Ghana"
+    email: "valentineghanem@gmail.com"
+date-released: "2026-05-28"
+version: "1.0.0"
+repository-code: "https://github.com/valentineghanem-bit/nhis-oop-ghana-261districts"
+url: "https://github.com/valentineghanem-bit/nhis-oop-ghana-261districts"
+license: MIT
+keywords:
+  - "NHIS"
+  - "health insurance"
+  - "spatial epidemiology"
+  - "geographically weighted regression"
+  - "machine learning"
+  - "Ghana"
+  - "universal health coverage"
+  - "out-of-pocket expenditure"
+  - "LISA"
+  - "Getis-Ord"
+abstract: "Cross-sectional ecological analysis of NHIS non-enrolment across 261 Ghana administrative districts integrating PHC 2021, DHS 2019/2022, and administrative records. Spatial clustering (Moran's I=0.461), GWR (mean local R²=0.624), and ensemble ML (RF AUC-ROC=0.918) identify poverty incidence as the dominant determinant and women's NHIS coverage as a protective factor."

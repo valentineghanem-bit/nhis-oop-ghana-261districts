@@ -1,0 +1,84 @@
+======================================================================
+DATA WRANGLING -- NHIS OOP Ghana 261 Districts
+AIPOCH v6.5 | 2026-05-28
+======================================================================
+
+[STEP 1] Loading district_master_261.csv
+  Shape: (261, 24)
+  Has_Geometry=True:  260
+  Has_Geometry=False: 1
+
+[STEP 2] Building region crosswalk (GEO_REGION <-> DHS Region_DHS)
+  GEO_REGION values (17): ['AHAFO', 'ASHANTI', 'BONO', 'BONO EAST', 'CENTRAL', 'EASTERN', 'GREATER ACCRA', 'NORTHERN', 'NORTHERN EAST', 'OTI', 'Oti', 'SAVANNAH', 'UPPER EAST', 'UPPER WEST', 'VOLTA', 'WESTERN', 'WESTERN NORTH']
+  DHS NHIS regions (11): ['Ashanti', 'Brong-Ahafo', 'Central', 'Eastern', 'Greater Accra', 'Northern (pre 2022)', 'Northern, Upper West, Upper East', 'Upper East', 'Upper West', 'Volta (pre 2022)', 'Western (pre 2022)']
+  DHS Access regions (21): ['..Northeast', '..Northern(post 2022)', '..Savannah', 'Ahafo', 'Ashanti', 'Bono', 'Bono East', 'Brong-Ahafo', 'Central', 'Eastern', 'Greater Accra', 'Northern (pre 2022)', 'Northern, Upper West, Upper East', 'Oti', 'Upper East', 'Upper West', 'Volta (post 2022)', 'Volta (pre 2022)', 'Western (post 2022)', 'Western (pre 2022)', 'Western North']
+  NHIS region matched: 216/261
+  Access region matched: 254/261
+
+[STEP 3] Merging DHS 2019 NHIS coverage (regional -> district)
+  Districts with NHIS 2019 coverage: 216/261
+
+[STEP 4] Merging DHS 2022 access barriers (regional -> district)
+  Districts with access data: 254/261
+
+[STEP 5] Merging DHS 2022 socioeconomic indicators (regional -> district)
+  Districts with socioeconomic data: 254/261
+  Filled 45 missing in NHIS_Coverage_Women_2019_pct
+  Filled 261 missing in NHIS_Coverage_Men_2019_pct
+  Filled 45 missing in No_Insurance_Women_2022_pct
+  Filled 7 missing in ANC_Skilled_pct
+  Filled 7 missing in Home_Delivery_pct
+  Filled 7 missing in Facility_Delivery_pct
+  Filled 7 missing in Female_Literate_pct
+  Filled 7 missing in Female_No_Edu_pct
+  Filled 7 missing in Female_SecPlus_pct
+
+[STEP 6] Computing derived analytical variables
+  National median Uninsurance_Rate_pct: 30.2%
+  High_Uninsurance=1 districts: 130 / 261
+  Catastrophic_Proxy=1 (Poverty>40 AND Uninsurance>50): 10 districts
+  Ecological zones: {'Middle Belt': 123, 'Southern Belt': 74, 'Northern Belt': 64}
+  [NOTE] NHIS_Coverage_Men_2019_pct dropped -- all NaN in DHS 2019 regional data
+  Total shape after all merges: (261, 39)
+
+[STEP 7] Building Queen contiguity spatial weights (n=260)
+  WARNING: Spatial weights build failed: No module named 'libpysal'
+  -> Install libpysal + geopandas: pip install libpysal geopandas --break-system-packages
+
+[STEP 8] Generating Table 1 — descriptive statistics by ecological zone
+  Table 1 shape: (13, 6)
+  Saved -> data/processed/table1_descriptive.csv
+
+  TABLE 1 PREVIEW (Overall column):
+    Uninsurance rate (%)                           Overall: 30.9 ± 13.5
+    Poverty incidence (%)                          Overall: 27.6 ± 13.4
+    Poverty intensity (%)                          Overall: 43.4 ± 1.7
+    Illiteracy rate (%)                            Overall: 29.0 ± 14.7
+    Youth dependency ratio                         Overall: 61.5 ± 13.4
+    Employment rate (%)                            Overall: 31.7 ± 6.1
+    NHIS coverage — women, 2019 (%)                Overall: 49.7 ± 6.2
+    ANC skilled provider coverage (%)              Overall: 98.1 ± 1.6
+    Home delivery (%)                              Overall: 12.6 ± 7.1
+    Female literacy (%)                            Overall: 60.5 ± 13.1
+    Female secondary+ education (%)                Overall: 69.9 ± 14.4
+    High uninsurance districts (n, %)              Overall: 130 (49.8%)
+    Catastrophic spending proxy (n, %)             Overall: 10 (3.8%)
+
+[STEP 9] Final missing data audit
+  Missing data: NONE in all analytical columns
+
+[STEP 10] Saving district_master_261_analytical.csv
+  Saved -> data/processed/district_master_261_analytical.csv
+  Final shape: (261, 36)
+  Columns (36): ['GEO_DISTRICT', 'GEO_REGION', 'MMDA', 'Region', 'Latitude', 'Longitude', 'Employed_Pop', 'Unemployed_Pop', 'Poverty_Incidence_pct', 'Poverty_Intensity_pct', 'Illiterate_Pop', 'Uninsured_Pop', 'Male_0_14', 'Female_0_14', 'Male_15_64', 'Female_15_64', 'Male_65plus', 'Female_65plus', 'Total_Pop', 'Uninsurance_Rate_pct', 'Illiteracy_Rate_pct', 'Youth_Dep_Ratio', 'Employment_Rate_pct', 'Has_Geometry', 'NHIS_Coverage_Women_2019_pct', 'No_Insurance_Women_2022_pct', 'ANC_Skilled_pct', 'Home_Delivery_pct', 'Facility_Delivery_pct', 'Female_Literate_pct', 'Female_No_Edu_pct', 'Female_SecPlus_pct', 'High_Uninsurance', 'Catastrophic_Proxy', 'Ecological_Zone', 'Uninsurance_Quartile']
+
+======================================================================
+PHASE 2 DATA WRANGLING COMPLETE
+======================================================================
+  Primary dataset: district_master_261_analytical.csv (261 x 36)
+  Spatial districts (Has_Geometry=True):  260
+  Non-spatial (Has_Geometry=False):       1
+  High_Uninsurance districts:             130
+  Catastrophic_Proxy districts:           10
+  Spatial weights:                        FAILED -- install libpysal
+  Table 1:                                table1_descriptive.csv

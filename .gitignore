@@ -1,0 +1,82 @@
+# .gitignore — NHIS OOP Ghana 261 Districts | AIPOCH v6.5
+
+# ─── MANUSCRIPTS (NEVER COMMIT) ──────────────────────────────────────────────
+manuscript/
+*.docx
+*.tex
+*_draft.*
+*manuscript*.pdf
+
+# ─── AIPOCH SESSION ARTEFACTS (NEVER COMMIT) ─────────────────────────────────
+AIPOCH_Learning_Log*.md
+Phase*_*.md
+task_plan.md
+findings.md
+progress.md
+FLOW.md
+QUESTION.md
+*.jsonl
+Canonical_Values_*.csv
+*_PeerReview_*.md
+QA_Summary_*.md
+QA_PASSED_*.txt
+QA_CONDITIONAL_*.txt
+QA_FAILED_*.txt
+Reconciliation_Matrix_*.md
+StressTest_Report_*.md
+CSV_DataQuality_*.md
+GitHub_RepoReview_*.md
+Poster_PeerReview_*.md
+Dashboard_PeerReview_*.md
+Manuscript_PeerReview_*.md
+sync-manifest.json
+SYNC_REPORT_*.md
+
+# ─── CREDENTIALS ─────────────────────────────────────────────────────────────
+.env
+github.env
+*.key
+*_token.*
+*_secret.*
+.claude/
+
+# ─── PYTHON ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+.eggs/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+*.cover
+
+# ─── R ────────────────────────────────────────────────────────────────────────
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# ─── JUPYTER ─────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ─── OS / EDITORS ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ─── DATA (raw PII — never commit) ────────────────�

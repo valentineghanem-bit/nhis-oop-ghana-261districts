@@ -1,0 +1,59 @@
+======================================================================
+DATA CLEANING AUDIT -- NHIS OOP Ghana 261 Districts  v3
+AIPOCH v6.5 | 2026-05-28
+======================================================================
+
+[STEP 1] Master Sheet (2021 Ghana PHC) -- data_only=True
+  Raw rows: 261
+  [DQ-02] Guan retained for non-spatial analysis (will append with Has_Geometry=False); GeoJSON join on 260 districts
+  Uninsurance_Rate_pct: 5.2%--73.2% (mean 30.9%)
+  Illiteracy_Rate_pct:  5.4%--60.8% (mean 29.0%)
+  Missing (Uninsurance): 0
+
+[STEP 2] GeoJSON loading + 44-pair name correction [DQ-06]
+  Matched: 260/260  |  Still unmatched: 0
+
+[STEP 3] Building district_master_261.csv
+  [DQ-02] Guan appended as non-spatial record -> n=261
+  Final shape: (261, 24)
+  Missing after imputation: {'Uninsurance_Rate_pct': 0, 'Poverty_Incidence_pct': 0, 'Illiteracy_Rate_pct': 0}
+  Spatial districts (Has_Geometry=True):  260
+  Non-spatial districts (Has_Geometry=False): 1
+  Uninsurance_Rate_pct range: 5.2%--73.2%
+  Saved -> data/processed/district_master_261.csv
+
+[STEP 4] DHS 2019 NHIS coverage [DQ-01]
+  2019 NHIS regions: 11
+  Women range: 38.9%--62.3%
+  Saved -> data/processed/nhis_regional_2019.csv
+
+[STEP 5] WHO GHED -- deduplication [DQ-03]
+  Years: 2000--2022  | Rows: 23
+  OOP_pc_USD 2022: [None]
+  GGHE_pct_GDP 2022: [2.05082273]
+  Saved -> data/processed/oop_national_trend.csv
+
+[STEP 6] DHS 2022 access-to-care indicators (regional)
+  Access regions: 21 | Home delivery range: 2.0%--30.9%
+  Saved -> data/processed/access_regional_2022.csv
+
+[STEP 7] DHS 2022 education and literacy (regional)
+  Socioeconomic regions: 21
+  Saved -> data/processed/socioeconomic_regional_2022.csv
+
+======================================================================
+DQ RESOLUTION COMPLETE
+======================================================================
+  DQ-01 RESOLVED: 2022 NHIS indicator invalid; 2019 DHS used
+  DQ-02 RESOLVED: Guan retained as non-spatial record (Has_Geometry=False); n=261
+  DQ-03 RESOLVED: WHO GHED deduplicated to 1 row/year
+  DQ-04 DOCUMENTED: DHS = regional; PHC 2021 = primary district source
+  DQ-05 RESOLVED: data_only=True -- all formula columns evaluated
+  DQ-06 RESOLVED: 44-pair hardcoded lookup; 260/260 geo-matched
+
+Final outputs:
+  district_master_261.csv         261 x 24  primary analytical dataset (Has_Geometry col)
+  nhis_regional_2019.csv          regional  DHS NHIS reference
+  oop_national_trend.csv          23 x 7    WHO GHED trend
+  access_regional_2022.csv        regional  DHS access barriers
+  socioeconomic_regional_2022.csv regional  DHS education/literacy
