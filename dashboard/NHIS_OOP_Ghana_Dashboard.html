@@ -289,62 +289,66 @@ function renderSHAP(){
 }
 
 function renderTimeline(){
-  const data=[
-    [2000,38.0],[2002,32.0],[2004,32.5],[2006,35.2],[2008,41.1],[2010,34.3],
-    [2012,36.9],[2014,45.1],[2016,37.8],[2017,22.7],[2018,33.5],[2019,29.0],
-    [2020,23.8],[2021,26.5],[2022,25.0]
-  ];
-  const ML=40,MR=20,MT=10,MB=30,BW=22;
-  const W=document.getElementById('pF').offsetWidth||600;
-  const svgH=180;
-  const mx=50,mn=0;
-  const totalW=W-ML-MR;
-  const xStep=totalW/data.length;
-  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-  svg.setAttribute('viewBox',`0 0 ${W} ${svgH}`);
-  svg.style.cssText='width:100%;display:block';
-  const hgt=svgH-MT-MB;
-  // Y axis labels
+  const D=[[2000,38.0,'Pre-NHIS baseline'],[2002,32.0,'Pre-NHIS baseline'],[2004,32.5,'NHIS Act 650 enacted'],
+    [2006,35.2,'NHIS roll-out phase'],[2008,41.1,'Peak OOP — enrolment gaps'],[2010,34.3,'NHIS expansion'],
+    [2012,36.9,'Enrolment growth'],[2014,45.1,'Peak OOP — premium arrears'],[2016,37.8,'NHIA reforms'],
+    [2017,22.7,'Capitation pilot'],[2018,33.5,'Post-pilot adjustment'],[2019,29.0,'Free NHIS pregnant women'],
+    [2020,23.8,'COVID-19 downturn'],[2021,26.5,'Post-COVID recovery'],[2022,25.0,'Latest estimate']];
+  const C=document.getElementById('pF');C.innerHTML='';
+  const ML=50,MR=16,MT=16,MB=44,BW=19,W=C.offsetWidth||640,SH=225,MX=50;
+  const TW=W-ML-MR,XS=TW/D.length,HG=SH-MT-MB;
+  const S=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  S.setAttribute('viewBox',`0 0 ${W} ${SH}`);S.style.cssText='width:100%;display:block';
+  const e=(t,a,p)=>{const el=document.createElementNS('http://www.w3.org/2000/svg',t);
+    Object.entries(a||{}).forEach(([k,v])=>el.setAttribute(k,v));if(p)p.appendChild(el);return el;};
+  // Gridlines + Y labels
   [0,10,20,30,40,50].forEach(v=>{
-    const y=MT+hgt*(1-v/mx);
-    const gl=document.createElementNS('http://www.w3.org/2000/svg','line');
-    gl.setAttribute('x1',ML);gl.setAttribute('x2',W-MR);
-    gl.setAttribute('y1',y);gl.setAttribute('y2',y);
-    gl.setAttribute('stroke','#e0e4ea');gl.setAttribute('stroke-width','0.5');
-    svg.appendChild(gl);
-    const t=document.createElementNS('http://www.w3.org/2000/svg','text');
-    t.setAttribute('x',ML-4);t.setAttribute('y',y+3);
-    t.setAttribute('text-anchor','end');t.setAttribute('font-size','9');t.setAttribute('fill','#888');
-    t.textContent=v+'%';svg.appendChild(t);
+    const y=MT+HG*(1-v/MX);
+    e('line',{x1:ML,x2:W-MR,y1:y,y2:y,stroke:v?'#e8ecf0':'#aaa','stroke-width':v?'0.5':'1'},S);
+    e('text',{x:ML-5,y:y+3.5,'text-anchor':'end','font-size':'9',fill:'#666'},S).textContent=v+'%';
   });
-  data.forEach(([yr,v],i)=>{
-    const x=ML+i*xStep+xStep/2;
-    const bh=hgt*(v/mx);
-    const y=MT+hgt-bh;
-    const nhis_start=2004;
-    const color=yr>=nhis_start?'#1a5276':'#95a5a6';
-    const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
-    rect.setAttribute('x',x-BW/2);rect.setAttribute('y',y);
-    rect.setAttribute('width',BW);rect.setAttribute('height',bh);
-    rect.setAttribute('fill',color);rect.setAttribute('rx','2');
-    svg.appendChild(rect);
-    const t=document.createElementNS('http://www.w3.org/2000/svg','text');
-    t.setAttribute('x',x);t.setAttribute('y',svgH-MB+12);
-    t.setAttribute('text-anchor','middle');t.setAttribute('font-size','9');t.setAttribute('fill','#555');
-    t.textContent=String(yr).slice(2);svg.appendChild(t);
+  // Y-axis title
+  const yt=e('text',{x:11,y:MT+HG/2,'text-anchor':'middle','font-size':'8.5',fill:'#444','font-weight':'600',transform:`rotate(-90,11,${MT+HG/2})`},S);
+  yt.textContent='OOP as % of Current Health Expenditure';
+  // X-axis title
+  e('text',{x:ML+TW/2,y:SH-3,'text-anchor':'middle','font-size':'8.5',fill:'#444','font-weight':'600'},S)
+    .textContent='Year (World Bank HNP Data, Ghana)';
+  // Pre-NHIS shade
+  e('rect',{x:ML,y:MT,width:2*XS,height:HG,fill:'rgba(149,165,166,0.12)'},S);
+  e('text',{x:ML+XS,y:MT+11,'text-anchor':'middle','font-size':'7.5',fill:'#888'},S).textContent='Pre-NHIS';
+  // Bars
+  D.forEach(([yr,v,note],i)=>{
+    const x=ML+i*XS+XS/2,bh=Math.max(2,HG*(v/MX)),y=MT+HG-bh;
+    const clr=yr<2004?'#95a5a6':v>=40?'#c0392b':'#1a5276';
+    const r=e('rect',{x:x-BW/2,y,width:BW,height:bh,fill:clr,rx:'2'},S);
+    r.style.cursor='pointer';r.dataset.color=clr;
+    r.addEventListener('mouseenter',function(ev){this.setAttribute('fill','#f39c12');
+      showTip(ev,`<strong>${yr}</strong><br>OOP: <strong>${v}%</strong> of CHE<br><em>${note}</em>`);});
+    r.addEventListener('mousemove',moveTip);
+    r.addEventListener('mouseleave',function(){this.setAttribute('fill',this.dataset.color);hideTip();});
+    // Value labels on notable bars
+    if(v>=40||yr===2017||yr===2022||yr===2000)
+      e('text',{x,y:y-3,'text-anchor':'middle','font-size':'8',fill:v>=40?'#c0392b':'#1a5276','font-weight':'700'},S).textContent=v+'%';
+    // X tick
+    e('text',{x,y:SH-MB+13,'text-anchor':'middle','font-size':'8.5',fill:'#555'},S).textContent=String(yr).slice(2);
   });
-  // NHIS annotation line
-  const nx=ML+3*xStep+xStep/2;
-  const nl=document.createElementNS('http://www.w3.org/2000/svg','line');
-  nl.setAttribute('x1',nx);nl.setAttribute('x2',nx);
-  nl.setAttribute('y1',MT);nl.setAttribute('y2',MT+hgt);
-  nl.setAttribute('stroke','#e74c3c');nl.setAttribute('stroke-width','1.5');nl.setAttribute('stroke-dasharray','4,3');
-  svg.appendChild(nl);
-  const nt=document.createElementNS('http://www.w3.org/2000/svg','text');
-  nt.setAttribute('x',nx+3);nt.setAttribute('y',MT+12);
-  nt.setAttribute('font-size','9');nt.setAttribute('fill','#e74c3c');nt.setAttribute('font-weight','600');
-  nt.textContent='NHIS 2004';svg.appendChild(nt);
-  document.getElementById('pF').innerHTML='';document.getElementById('pF').appendChild(svg);
+  // NHIS 2004 line — index 2 (correct)
+  const nx=ML+2*XS+XS/2;
+  e('line',{x1:nx,x2:nx,y1:MT,y2:MT+HG,stroke:'#27ae60','stroke-width':'1.8','stroke-dasharray':'5,3'},S);
+  e('text',{x:nx+4,y:MT+10,'font-size':'8.5',fill:'#27ae60','font-weight':'700'},S).textContent='NHIS Act 650';
+  e('text',{x:nx+4,y:MT+20,'font-size':'8',fill:'#27ae60'},S).textContent='enacted (2004)';
+  // 2014 peak note
+  e('text',{x:ML+7*XS+XS/2+4,y:MT+HG*(1-45.1/MX)-5,'font-size':'8',fill:'#c0392b','font-weight':'600'},S).textContent='↑ Premium arrears';
+  // 2017 low note
+  e('text',{x:ML+9*XS+XS/2-4,y:MT+HG*(1-22.7/MX)-5,'text-anchor':'end','font-size':'8',fill:'#1a5276','font-weight':'600'},S).textContent='↓ Capitation pilot';
+  // Legend
+  const LY=SH-MB+27;
+  [{c:'#95a5a6',l:'Pre-NHIS'},{c:'#1a5276',l:'Post-NHIS'},{c:'#c0392b',l:'OOP spike ≥40%'}].forEach(({c,l},i)=>{
+    const lx=ML+i*(TW/3);
+    e('rect',{x:lx,y:LY,width:10,height:10,fill:c,rx:'2'},S);
+    e('text',{x:lx+13,y:LY+8,'font-size':'8',fill:'#444'},S).textContent=l;
+  });
+  C.appendChild(S);
 }
 
 function renderAll(){
