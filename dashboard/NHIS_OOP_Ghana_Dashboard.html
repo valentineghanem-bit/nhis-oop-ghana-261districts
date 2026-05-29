@@ -175,19 +175,22 @@ function renderChoropleth(){
     el.addEventListener('mouseleave',hideTip);
     svg.appendChild(el);
   });
-  // Legend
+  // Legend — gradient bar with min/max labels
   const leg=document.getElementById('legA');
-  leg.innerHTML='<span style="font-size:.72em;color:#555">Low ';
-  const g=document.createElement('span');
-  g.style.cssText='display:inline-flex;width:120px;height:12px;border-radius:3px;overflow:hidden;vertical-align:middle';
-  for(let i=0;i<20;i++){
-    const b=document.createElement('span');
-    b.style.cssText=`flex:1;background:${ylOrRd(i/19)}`;
-    g.appendChild(b);
-  }
-  leg.appendChild(g);
-  leg.innerHTML+=` High (5.2–73.2%)</span>`;
-  leg.prepend(g);
+  leg.innerHTML='';
+  const wrap=document.createElement('div');
+  wrap.style.cssText='display:flex;align-items:center;gap:6px;margin-top:4px';
+  const lo=document.createElement('span');
+  lo.style.cssText='font-size:.72em;color:#555;white-space:nowrap';
+  lo.textContent='Low ('+mn.toFixed(1)+'%)';
+  const bar=document.createElement('span');
+  bar.style.cssText='display:inline-flex;flex:1;height:12px;border-radius:3px;overflow:hidden;border:1px solid #ddd';
+  for(let i=0;i<30;i++){const b=document.createElement('span');b.style.cssText=`flex:1;background:${ylOrRd(i/29)}`;bar.appendChild(b);}
+  const hi=document.createElement('span');
+  hi.style.cssText='font-size:.72em;color:#555;white-space:nowrap';
+  hi.textContent='High ('+mx.toFixed(1)+'%)';
+  wrap.appendChild(lo);wrap.appendChild(bar);wrap.appendChild(hi);
+  leg.appendChild(wrap);
 }
 
 function renderLISA(){
