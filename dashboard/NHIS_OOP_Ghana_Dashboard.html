@@ -181,19 +181,17 @@ function renderChoropleth(){
   // Legend — gradient bar with min/max labels
   const leg=document.getElementById('legA');
   leg.innerHTML='';
-  const wrap=document.createElement('div');
-  wrap.style.cssText='display:flex;align-items:center;gap:6px;margin-top:4px';
+  leg.style.cssText='display:flex;align-items:center;gap:6px;margin-top:6px;width:100%';
   const lo=document.createElement('span');
   lo.style.cssText='font-size:.72em;color:#555;white-space:nowrap';
-  lo.textContent='Low ('+mn.toFixed(1)+'%)';
-  const bar=document.createElement('span');
-  bar.style.cssText='display:inline-flex;flex:1;height:12px;border-radius:3px;overflow:hidden;border:1px solid #ddd';
+  lo.textContent=mn.toFixed(1)+'%';
+  const bar=document.createElement('div');
+  bar.style.cssText='flex:1;height:11px;border-radius:3px;overflow:hidden;border:1px solid #ddd;display:flex';
   for(let i=0;i<30;i++){const b=document.createElement('span');b.style.cssText=`flex:1;background:${ylOrRd(i/29)}`;bar.appendChild(b);}
   const hi=document.createElement('span');
   hi.style.cssText='font-size:.72em;color:#555;white-space:nowrap';
-  hi.textContent='High ('+mx.toFixed(1)+'%)';
-  wrap.appendChild(lo);wrap.appendChild(bar);wrap.appendChild(hi);
-  leg.appendChild(wrap);
+  hi.textContent=mx.toFixed(1)+'%';
+  leg.appendChild(lo);leg.appendChild(bar);leg.appendChild(hi);
 }
 
 function renderLISA(){
@@ -329,9 +327,7 @@ function renderTimeline(){
       showTip(ev,`<strong>${yr}</strong><br>OOP: <strong>${v}%</strong> of CHE<br><em>${note}</em>`);});
     r.addEventListener('mousemove',moveTip);
     r.addEventListener('mouseleave',function(){this.setAttribute('fill',this.dataset.color);hideTip();});
-    // Value labels on notable bars
-    if(v>=40||yr===2017||yr===2022||yr===2000)
-      e('text',{x,y:y-3,'text-anchor':'middle','font-size':'8',fill:v>=40?'#c0392b':'#1a5276','font-weight':'700'},S).textContent=v+'%';
+    e('text',{x,y:y+12,'text-anchor':'middle','font-size':'7.5',fill:'#fff','font-weight':'700'},S).textContent=v+'%';
     // X tick
     e('text',{x,y:SH-MB+13,'text-anchor':'middle','font-size':'8.5',fill:'#555'},S).textContent=String(yr).slice(2);
   });
@@ -340,10 +336,11 @@ function renderTimeline(){
   e('line',{x1:nx,x2:nx,y1:MT,y2:MT+HG,stroke:'#27ae60','stroke-width':'1.8','stroke-dasharray':'5,3'},S);
   e('text',{x:nx+4,y:MT+10,'font-size':'8.5',fill:'#27ae60','font-weight':'700'},S).textContent='NHIS Act 650';
   e('text',{x:nx+4,y:MT+20,'font-size':'8',fill:'#27ae60'},S).textContent='enacted (2004)';
-  // 2014 peak note
-  e('text',{x:ML+7*XS+XS/2+4,y:MT+HG*(1-45.1/MX)-5,'font-size':'8',fill:'#c0392b','font-weight':'600'},S).textContent='↑ Premium arrears';
-  // 2017 low note
-  e('text',{x:ML+9*XS+XS/2-4,y:MT+HG*(1-22.7/MX)-5,'text-anchor':'end','font-size':'8',fill:'#1a5276','font-weight':'600'},S).textContent='↓ Capitation pilot';
+  // Bar annotations — rotated inside-bar for 4 notable years
+  [[7,45.1,'Premium arrears'],[9,22.7,'Capitation pilot'],[4,41.1,'Enrolment gaps'],[12,23.8,'COVID-19']].forEach(([idx,pct,lbl])=>{
+    const bh=HG*(pct/MX),y0=MT+HG-bh,x0=ML+idx*XS+XS/2;
+    e('text',{x:x0,y:y0+bh*.5,'text-anchor':'middle','font-size':'6.5',fill:'rgba(255,255,255,0.8)','font-weight':'600',transform:`rotate(-90,${x0},${y0+bh*.5})`},S).textContent=lbl;
+  });
   // Legend
   const LY=SH-MB+27;
   [{c:'#95a5a6',l:'Pre-NHIS'},{c:'#1a5276',l:'Post-NHIS'},{c:'#c0392b',l:'OOP spike ≥40%'}].forEach(({c,l},i)=>{
