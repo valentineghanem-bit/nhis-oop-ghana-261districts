@@ -1,23 +1,5 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Bespoke Poster</title>
-<script>/*echarts5-inline*/
-/*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements.  See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership.  The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License.  You may obtain a copy of the License at
-*
-*   http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+<script>/*viz*/
 
 !function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"function"==typeof define&&define.amd?define(["exports"],e):e((t="undefined"!=typeof globalThis?globalThis:t||self).echarts={})}(this,(function(t){"use strict";
 /*! *****************************************************************************
@@ -91,7 +73,7 @@ body{margin:0;background:#7f8c9b;font-family:'Inter',system-ui,Segoe UI,Roboto,A
 <div class="body">
  <div class="col">
   <div class="block"><h2><span class="n">1</span>Where the burden concentrates</h2><p id="t1"></p>
-   <div class="chart" id="cMap" style="height:175mm"></div><div class="cap" id="cap1"></div></div>
+   <div class="chart" id="cMap" style="height:205mm"></div><div class="lisaleg" id="legMap"></div><div class="cap" id="cap1"></div></div>
   <div class="block"><h2><span class="n">2</span>The regional gradient</h2><p id="t2"></p>
    <div class="chart" id="cRank" style="height:150mm"></div><div class="cap">Regions ranked; colour = spatial-cluster class.</div></div>
  </div>
@@ -99,7 +81,7 @@ body{margin:0;background:#7f8c9b;font-family:'Inter',system-ui,Segoe UI,Roboto,A
   <div class="block"><h2><span class="n">3</span>What drives it</h2><p id="t3"></p>
    <div class="chart" id="cScatter" style="height:140mm"></div><div class="cap" id="cap3"></div></div>
   <div class="block"><h2><span class="n">4</span>Spatial cluster structure</h2><p id="t4"></p>
-   <div class="chart" id="cLisa" style="height:150mm"></div>
+   <div class="chart" id="cLisa" style="height:175mm"></div>
    <div class="lisaleg"><span><span class="sw" style="background:var(--hh)"></span>HH</span><span><span class="sw" style="background:var(--ll)"></span>LL</span><span><span class="sw" style="background:var(--hl)"></span>HL</span><span><span class="sw" style="background:var(--lh)"></span>LH</span><span><span class="sw" style="background:var(--ns)"></span>NS</span></div></div>
   <div class="takeaway"><h2>What it means</h2><p id="pTake"></p></div>
  </div>
@@ -136,6 +118,8 @@ echarts.registerMap('ghana',GEO);
 function init(id,opt){var c=echarts.init(document.getElementById(id),null,{renderer:'svg'});c.setOption(opt);}
 function mapOpt(metric){var data=GEO.features.map(function(f){var d=byName[f.properties.region]||{};return{name:f.properties.name,itemStyle:{areaColor:metric==='v'?(d.v!=null?cs((d.v-vr[0])/((vr[1]-vr[0])||1)):'#ccc'):(LISA[d.lisa]||'#ccc'),borderColor:'#fff',borderWidth:.4}};});return{series:[{type:'map',map:'ghana',roam:false,aspectScale:1,data:data,label:{show:false},emphasis:{disabled:true}}]};}
 init('cMap',mapOpt('v'));init('cLisa',mapOpt('lisa'));
+(function(){var el=document.getElementById('legMap');if(!el)return;var dp=(vr[1]-vr[0]>20?0:1),stops=[];for(var i=0;i<=12;i++)stops.push(cs(i/12));
+ el.innerHTML='<span style="font-weight:800">'+vr[0].toFixed(dp)+C.unit+'</span><span style="flex:1;min-width:34mm;height:5mm;border-radius:2.5mm;border:1px solid var(--line);background:linear-gradient(90deg,'+stops.join(',')+')"></span><span style="font-weight:800">'+vr[1].toFixed(dp)+C.unit+'</span><span style="margin-left:3mm;font-weight:800;text-transform:uppercase;letter-spacing:.04em">'+C.outcome+'</span>';})();
 var rk=R.slice().sort(function(a,b){return a.v-b.v;});
 init('cRank',{grid:{left:120,right:60,top:10,bottom:30},xAxis:{type:'value',axisLabel:{fontSize:16}},yAxis:{type:'category',data:rk.map(function(x){return x.short;}),axisLabel:{fontSize:15}},
  series:[{type:'bar',data:rk.map(function(x){return{value:x.v,itemStyle:{color:LISA[x.lisa]}};}),barWidth:'64%',label:{show:true,position:'right',formatter:'{c}'+C.unit,fontSize:14}}]});
