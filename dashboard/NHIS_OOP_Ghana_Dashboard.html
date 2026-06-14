@@ -227,11 +227,12 @@ function boxOpt(){var ks=['HH','HL','LH','LL','NS'],cats=[],bd=[],pts=[];
    {type:'scatter',data:pts,symbolSize:7,itemStyle:{color:function(pp){return LISA[cats[pp.value[0]]];},opacity:.7}}]};}
 function bulletOpt(){var mv=R.reduce(function(s,d){return s+d.v;},0)/R.length;var rows=[{n:PRIM.label,f:S.focus?byName[S.focus].v:mv,m:mv}];
  if(C.hasX){var mx=R.filter(function(d){return d.x!=null;});var mmx=mx.reduce(function(s,d){return s+d.x;},0)/mx.length;rows.push({n:COV.label,f:S.focus&&byName[S.focus].x!=null?byName[S.focus].x:mmx,m:mmx});}
- return{grid:{left:96,right:30,top:14,bottom:20},legend:{data:['Focus','National mean'],top:0,textStyle:{color:ax(),fontSize:10}},tooltip:{trigger:'axis'},
+ var DK=theme()==='dark',NAT=DK?'#94a3b8':'#64748b',NATB=DK?'#cbd5e1':'#3f4a56',FOC=C.primary||'#2563eb',INA=DK?'#39434f':'#cdd5de';
+ return{grid:{left:96,right:30,top:14,bottom:20},legend:{data:['Focus','National mean'],top:0,icon:'roundRect',itemWidth:14,itemHeight:10,textStyle:{color:ax(),fontSize:10},inactiveColor:INA},tooltip:{trigger:'axis'},
   xAxis:{type:'value',axisLabel:{color:ax()},splitLine:{lineStyle:{color:gl()}}},
   yAxis:{type:'category',data:rows.map(function(r){return r.n;}),axisLabel:{color:ax(),fontSize:10},axisLine:{lineStyle:{color:gl()}}},
-  series:[{name:'National mean',type:'bar',barGap:'-100%',barWidth:'40%',data:rows.map(function(r){return r.m;}),itemStyle:{color:gl()},z:1},
-   {name:'Focus',type:'bar',barWidth:'40%',data:rows.map(function(r){return r.f;}),itemStyle:{color:function(pp){return S.focus?LISA[byName[S.focus].lisa]:'#7f8c9b';}},z:2,label:{show:true,position:'right',color:ax(),formatter:function(p){return p.value.toFixed(1);}}}]};}
+  series:[{name:'National mean',type:'bar',barGap:'-100%',barWidth:'48%',data:rows.map(function(r){return r.m;}),itemStyle:{color:NAT,borderColor:NATB,borderWidth:1.2,borderType:'dashed'},z:1},
+   {name:'Focus',type:'bar',barWidth:'38%',data:rows.map(function(r){return r.f;}),itemStyle:{color:function(pp){return S.focus?LISA[byName[S.focus].lisa]:FOC;}},z:2,label:{show:true,position:'right',color:ax(),formatter:function(p){return p.value.toFixed(1);}}}]};}
 
 function zoomMap(id,factor){if(factor==='reset'){mapZoom[id]=1;get(id).setOption(id==='mapLisa'?mapOpt('lisa'):mapOpt('v'),true);return;}
  var c=charts[id];if(!c)return;var z=mapZoom[id]||1;try{z=c.getOption().series[0].zoom||z;}catch(e){}
