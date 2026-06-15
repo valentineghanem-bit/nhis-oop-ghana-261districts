@@ -73,15 +73,15 @@ body{margin:0;background:#7f8c9b;font-family:'Inter',system-ui,Segoe UI,Roboto,A
 <div class="body">
  <div class="col">
   <div class="block"><h2><span class="n">1</span>Where the burden concentrates</h2><p id="t1"></p>
-   <div class="chart" id="cMap" style="height:205mm"></div><div class="lisaleg" id="legMap"></div><div class="cap" id="cap1"></div></div>
+   <div class="chart" id="cMap" style="height:430mm"></div><div class="lisaleg" id="legMap"></div><div class="cap" id="cap1"></div></div>
   <div class="block"><h2><span class="n">2</span>The regional gradient</h2><p id="t2"></p>
-   <div class="chart" id="cRank" style="height:150mm"></div><div class="cap">Regions ranked; colour = spatial-cluster class.</div></div>
+   <div class="chart" id="cRank" style="height:305mm"></div><div class="cap">Regions ranked; colour = spatial-cluster class.</div></div>
  </div>
  <div class="col">
-  <div class="block"><h2><span class="n">3</span>What drives it</h2><p id="t3"></p>
-   <div class="chart" id="cScatter" style="height:140mm"></div><div class="cap" id="cap3"></div></div>
+  <div class="block"><h2><span class="n">3</span><span id="h3">What drives it</span></h2><p id="t3"></p>
+   <div class="chart" id="cScatter" style="height:300mm"></div><div class="cap" id="cap3"></div></div>
   <div class="block"><h2><span class="n">4</span>Spatial cluster structure</h2><p id="t4"></p>
-   <div class="chart" id="cLisa" style="height:175mm"></div>
+   <div class="chart" id="cLisa" style="height:380mm"></div>
    <div class="lisaleg"><span><span class="sw" style="background:var(--hh)"></span>HH</span><span><span class="sw" style="background:var(--ll)"></span>LL</span><span><span class="sw" style="background:var(--hl)"></span>HL</span><span><span class="sw" style="background:var(--lh)"></span>LH</span><span><span class="sw" style="background:var(--ns)"></span>NS</span></div></div>
   <div class="takeaway"><h2>What it means</h2><p id="pTake"></p></div>
  </div>
@@ -107,8 +107,8 @@ var hi=R.slice().sort(function(a,b){return b.v-a.v;})[0],lo=R.slice().sort(funct
 document.getElementById('t1').innerHTML='The burden is <span class="hl">spatially concentrated</span> rather than evenly spread: '+hi.short+' carries the highest '+C.outcome+' ('+hi.v+C.unit+'), '+lo.short+' the lowest ('+lo.v+C.unit+').';
 document.getElementById('cap1').textContent='District '+C.outcome+', coloured by regional value (colourblind-safe scale).';
 document.getElementById('t2').innerHTML='A clear <span class="hl">north–south gradient</span> separates the most- and least-affected regions, the signature of structural inequity.';
-document.getElementById('t3').innerHTML=C.hasX?('Across regions, '+C.outcome+' tracks <span class="hl">'+C.cov+'</span> — the social-determinant pathway the analysis isolates.'):'Random-forest models identify the dominant district-level predictors of the outcome.';
-document.getElementById('cap3').textContent=C.hasX?(C.outcome+' vs '+C.cov+', 16 regions, with OLS fit.'):'Model-based driver analysis.';
+document.getElementById('t3').innerHTML=C.hasX?('Across regions, '+C.outcome+' tracks <span class="hl">'+C.cov+'</span> — the social-determinant pathway the analysis isolates.'):('Mean <span class="hl">'+C.outcome+'</span> differs sharply across spatial-cluster classes — high-high regions carry the heaviest burden.');
+document.getElementById('cap3').textContent=C.hasX?(C.outcome+' vs '+C.cov+', 16 regions, with OLS fit.'):('Mean '+C.outcome+' by LISA cluster class (HH/HL/LH/LL/NS).');
 document.getElementById('t4').innerHTML='Local Moran&#39;s I confirms a significant <span class="hl">high-high cluster</span> and a complementary low-low cluster — the spatial fingerprint of the disparity.';
 var big=KPIS.slice(0,4);
 document.getElementById('pBig').innerHTML=big.map(function(k){return'<div class="bn"><div class="v">'+k.v+'</div><div class="l">'+k.l+'</div><div class="s">'+k.s+'</div></div>';}).join('');
@@ -127,5 +127,13 @@ if(C.hasX){var xs=R.filter(function(d){return d.x!=null;}),X=xs.map(function(d){
  init('cScatter',{grid:{left:70,right:30,top:20,bottom:60},xAxis:{name:C.cov,nameLocation:'middle',nameGap:42,nameTextStyle:{fontSize:18},axisLabel:{fontSize:15}},yAxis:{name:C.outcome,nameTextStyle:{fontSize:18},axisLabel:{fontSize:15}},
   series:[{type:'scatter',symbolSize:26,data:xs.map(function(d){return{value:[d.x,d.v],itemStyle:{color:LISA[d.lisa],borderColor:'#fff',borderWidth:2}};})},
    {type:'line',symbol:'none',silent:true,lineStyle:{color:'#888',type:'dotted',width:3},data:[[xr[0],a0+b*xr[0]],[xr[1],a0+b*xr[1]]]}]});
-}else{document.getElementById('cScatter').parentNode.parentNode.style.display='none';}
+}else{document.getElementById('h3').textContent='Burden by cluster type';
+ var ORD=['HH','HL','LH','LL','NS'],LNAME={HH:'High-High',HL:'High-Low',LH:'Low-High',LL:'Low-Low',NS:'Not sig.'},grp={};
+ R.forEach(function(d){(grp[d.lisa]=grp[d.lisa]||[]).push(d.v);});
+ var cats=ORD.filter(function(k){return grp[k]&&grp[k].length;});
+ var means=cats.map(function(k){return +(grp[k].reduce(function(a,b){return a+b;},0)/grp[k].length).toFixed(1);});
+ init('cScatter',{grid:{left:130,right:70,top:14,bottom:40},xAxis:{type:'value',axisLabel:{fontSize:15}},
+  yAxis:{type:'category',data:cats.map(function(k){return LNAME[k];}),axisLabel:{fontSize:15}},
+  series:[{type:'bar',barWidth:'60%',data:cats.map(function(k,i){return{value:means[i],itemStyle:{color:LISA[k]}};}),
+   label:{show:true,position:'right',formatter:'{c}'+C.unit,fontSize:14}}]});}
 </script></body></html>
